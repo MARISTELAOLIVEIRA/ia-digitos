@@ -88,7 +88,8 @@ Deep/
 ### ⚡ Quick Start (Usuários Experientes)
 
 ```bash
-# Clone o projeto
+# Baixe ou Clone o projeto
+Baixar Zip ou:
 git clone <url-do-repositorio>
 cd Deep
 
@@ -284,6 +285,26 @@ Quando terminar de trabalhar:
 ```bash
 deactivate
 ```
+
+---
+
+### ✅ Checklist de Verificação
+
+Confirme que tudo está funcionando:
+
+- [ ] Python 3.11 (ou superior) instalado: `python3 --version`
+- [ ] Ambiente virtual criado: Pasta `venv/` existe
+- [ ] Ambiente virtual ativado: Terminal mostra `(venv)`
+- [ ] Dependências instaladas: `pip list` mostra tensorflow, flask, etc.
+- [ ] Modelo treinado: Arquivo `model.keras` existe (≈ 3 MB)
+- [ ] Aplicação iniciada: Terminal mostra `Running on http://127.0.0.1:5000`
+- [ ] Navegador abrindo: Página com canvas aparece
+- [ ] Desenho funciona: Consegue desenhar no canvas
+- [ ] Predição funciona: Botão "Prever" retorna um número
+
+**Se todos os itens estão ✅, você está pronto para começar!**
+
+---
 
 ## 🎯 Como Usar
 
