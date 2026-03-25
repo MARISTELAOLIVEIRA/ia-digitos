@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IA Aprendendo com Humanos</title>
+</head>
+
+<body style="text-align:center; background:#0b1f29; color:white; font-family:Arial;">
+
+<h1>🧠 IA que aprende com você!</h1>
+
+<canvas id="canvas" width="280" height="280" style="border:2px solid white;"></canvas>
+
+<br><br>
+
+<button onclick="predict()">Prever</button>
+<button onclick="clearCanvas()">Limpar</button>
+<button onclick="retrain()">🔁 Re-treinar IA</button>
+
+<h2 id="result"></h2>
+
+<div id="feedback_area" style="display:none;">
+    <p>Acertou?</p>
+
+    <button onclick="correct()">Sim</button>
+    <button onclick="wrong()">Não</button>
+
+    <!-- 🔥 só aparece se errar -->
+    <div id="correction" style="display:none; margin-top:10px;">
+        <input type="number" id="correct_number" min="0" max="9" placeholder="Digite o número correto">
+        <button onclick="sendCorrection()">Enviar Correção</button>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+ctx.fillStyle = "black";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+let drawing = false;
+let lastImage = null;
+
+canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mouseup", () => drawing = false);
+canvas.addEventListener("mousemove", draw);
+
+function draw(e) {
+    if (!drawing) return;
+
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(e.offsetX, e.offsetY, 12, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function clearCanvas() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    document.getElementById("result").innerText = "";
+    document.getElementById("feedback_area").style.display = "none";
+    
+}
+
+function predict() {
+    const data = canvas.toDataURL();
+    lastImage = data;
+
+    fetch("/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({image: data})
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").innerText =
+            `🔢 ${data.prediction} (${(data.confidence * 100).toFixed(1)}%)`;
+
+        document.getElementById("feedback_area").style.display = "block";
+    });
+}
+
+function correct() {
+    alert("🎉 Boa!");
+
+    // 🔥 esconder correção se estiver visível
+    document.getElementById("correction").style.display = "none";
+}
+
+function wrong() {
+    // 🔥 mostrar campo de correção
+    document.getElementById("correction").style.display = "block";
+}
+
+function sendCorrection() {
+    const label = document.getElementById("correct_number").value;
+
+    if (label === "") {
+        alert("Digite o número correto!");
+        return;
+    }
+
+    fetch("/feedback", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            image: lastImage,
+            label: label
+        })
+    });
+
+    alert("🤖 Obrigado! Você treinou a IA!");
+
+    // 🔥 resetar interface
+    document.getElementById("correction").style.display = "none";
+    document.getElementById("correct_number").value = "";
+}
+
+function retrain() {
+    fetch("/retrain", {method: "POST"})
+    .then(() => {
+        alert("🧠 IA re-treinada com novos dados!");
+    });
+}
+</script>
+
+</body>
+</html>
